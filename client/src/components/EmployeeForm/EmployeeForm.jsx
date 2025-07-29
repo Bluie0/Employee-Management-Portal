@@ -74,21 +74,32 @@ const EmployeeForm = ({ employee, onSubmit, onCancel }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      setIsSubmitting(true);
-      try {
-        if (employee) {
-          await onSubmit(employee.employeeId, formData);
-        } else {
-          await onSubmit(formData);
-        }
-      } finally {
-        setIsSubmitting(false);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  console.log('Form submitted with data:', formData); // Add this debug log
+  
+  if (validateForm()) {
+    setIsSubmitting(true);
+    try {
+      console.log('Calling onSubmit with:', employee ? 'UPDATE' : 'ADD'); // Debug log
+      
+      if (employee) {
+        await onSubmit(employee.employeeId, formData);
+      } else {
+        console.log('Adding new employee with data:', formData); // Debug log
+        await onSubmit(formData);
       }
+      
+      console.log('onSubmit completed successfully'); // Debug log
+    } catch (error) {
+      console.error('Error in form submission:', error); // Add error logging
+    } finally {
+      setIsSubmitting(false);
     }
-  };
+  } else {
+    console.log('Form validation failed:', errors); // Debug validation
+  }
+};
 
   return (
     <div className="form-overlay" onClick={(e) => e.target.className === 'form-overlay' && onCancel()}>

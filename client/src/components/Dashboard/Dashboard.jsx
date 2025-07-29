@@ -43,31 +43,39 @@ const Dashboard = () => {
   }, [token, API_BASE_URL]);
 
   // Add new employee
-  const addEmployee = async (employeeData) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/addEmp`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(employeeData),
-      });
-      
-      const data = await response.json();
-      if (response.ok) {
-        fetchEmployees();
-        setShowForm(false);
-        showNotification('Employee added successfully!', 'success');
-      } else {
-        showNotification(data.message || 'Failed to add employee', 'error');
-      }
-    } catch (error) {
-      console.error('Error adding employee:', error);
-      showNotification('Error adding employee', 'error');
+// In your Dashboard component
+const addEmployee = async (employeeData) => {
+  try {
+    console.log('Dashboard: Adding employee with data:', employeeData); // Debug log
+    
+    const response = await fetch(`${API_BASE_URL}/addEmp`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(employeeData),
+    });
+    
+    console.log('Response status:', response.status); // Debug log
+    const data = await response.json();
+    console.log('Response data:', data); // Debug log
+    
+    if (response.ok) {
+      fetchEmployees(); // Refresh the list
+      setShowForm(false);
+      showNotification('Employee added successfully!', 'success');
+    } else {
+      console.error('Server error response:', data);
+      showNotification(data.error || data.message || 'Failed to add employee', 'error');
     }
-  };
+  } catch (error) {
+    console.error('Network error adding employee:', error);
+    showNotification('Network error: Could not add employee', 'error');
+  }
+};
+
 
   // Update employee
   const updateEmployee = async (employeeId, employeeData) => {
